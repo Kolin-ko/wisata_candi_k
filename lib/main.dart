@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wisata_candi_k/screens/profile_screen.dart';
 import 'screens/detail_screen.dart';
 import 'data/candi_data.dart';
 
@@ -12,8 +13,9 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
-      home : DetailScreen(candi: candiList[0],),
+      title: "Wisata Candi di Indonesia",
+      home: ProfileScreen(),
+      // home : DetailScreen(candi: candiList[4],),
     );
   }
 }
