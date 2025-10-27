@@ -14,8 +14,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Wisata Candi di Indonesia",
-      home: ProfileScreen(),
-      // home : DetailScreen(candi: candiList[4],),
+      // home: ProfileScreen()
+      home : DetailScreen(candi: candiList[4],),
     );
   }
 }

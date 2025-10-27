@@ -14,6 +14,10 @@ class DetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            AppBar(
+              backgroundColor: Colors.brown,
+              title: Text("detail candi, ${candi.name}", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.yellow)),
+            ),
             Stack(
               children: [
                 Padding(
