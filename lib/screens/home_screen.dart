@@ -15,16 +15,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // TODO: 1 Buat appBar dengan judul Wisata Candi
-      appBar: AppBar(title: Text("Wisata Candi"),),
+      appBar: AppBar(title: Text("Wisata Candi")),
       // TODO: 2 Buat body dengan GridView.builder
-      body: GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      padding: EdgeInsets.all(8.0),
-      itemCount: candiList.length,
-       itemBuilder: (context, index) {
-        final Candi candi = candiList[index];
-      // TODO: 3 Buat ItemCard sebagai return value dari GridView.builder
-        return ItemCard(candi: candi,);
-       },
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+        ),
+        padding: EdgeInsets.all(8.0),
+        itemCount: candiList.length,
+        itemBuilder: (context, index) {
+          final Candi candi = candiList[index];
+          // TODO: 3 Buat ItemCard sebagai return value dari GridView.builder
+          return ItemCard(candi: candi);
+        },
       ),
     );
   }
