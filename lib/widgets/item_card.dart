@@ -27,10 +27,10 @@ class ItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // TODO: 3. Buat Image sebagai anak dari Column
-            Hero(
-              tag: candi.imageAsset,
-              child: Expanded(
-                // TODO : 7 . Implementasi Hero animation
+            Expanded(
+              // TODO : 7 . Implementasi Hero animation
+              child: Hero(
+                tag: candi.imageAsset,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: Image.asset(

@@ -4,7 +4,7 @@ import 'package:wisata_candi_k/screens/home_screen.dart';
 import 'package:wisata_candi_k/screens/sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
-  SignUpScreen({super.key});
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -18,7 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final TextEditingController _passwordController = TextEditingController();
 
-  String _errorText = '';
+  final String _errorText = '';
 
   bool _isSignedIn = false;
 

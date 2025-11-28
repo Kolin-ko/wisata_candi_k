@@ -16,19 +16,22 @@ class DetailScreen extends StatelessWidget {
           children: [
             AppBar(
               backgroundColor: Colors.brown,
-              title: Text("detail candi, ${candi.name}", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.yellow)),
+              title: Text("Detail Candi (${candi.name})", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.yellow)),
             ),
             Stack(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      candi.imageAsset,
-                      width: double.infinity,
-                      height: 300,
-                      fit: BoxFit.cover,
+                  child: Hero(
+                    tag: candi.imageAsset,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        candi.imageAsset,
+                        width: double.infinity,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),

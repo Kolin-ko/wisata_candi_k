@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // TODO: 2 Buat body dengan GridView.builder
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 2,
         ),
         padding: EdgeInsets.all(8.0),
         itemCount: candiList.length,

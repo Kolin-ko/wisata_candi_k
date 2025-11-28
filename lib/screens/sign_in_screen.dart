@@ -17,7 +17,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = 
   TextEditingController();
 
-  String _errorText = '';
+  final String _errorText = '';
 
   bool _isSignedIn = false;
 
