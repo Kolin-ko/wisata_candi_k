@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:wisata_candi_k/screens/home_screen.dart';
 import 'package:wisata_candi_k/screens/sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -81,7 +82,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   // TODO 7 : Button Sign In
                   SizedBox(height: 16),
-                  ElevatedButton(onPressed: () {}, child: Text('Sign Up')),
+                  ElevatedButton(onPressed: () {
+                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => HomeScreen()));
+                  }, child: Text('Sign Up')),
 
                   // TODO 8 : Text Sign Up
                   SizedBox(height: 10),
