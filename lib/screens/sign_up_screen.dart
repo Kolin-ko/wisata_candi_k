@@ -12,18 +12,75 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   // TODO 1 : Deklarasi Variabel
-  final TextEditingController _usernameController = TextEditingController();
-
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _namaPenggunaController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
 
-  final String _errorText = '';
-
+  String _errorText = '';
   bool _isSignedIn = false;
-
   bool _obscurePassword = true;
 
+  String _errorTextFullname = '';
+  String _errorTextUsername = '';
+  String _errorTextPassword = '';
+
+
+  // TODO : Membuat _signUp
+  void _signUp(){
+    String fullname = _fullnameController.text.trim();
+    String username = _namaPenggunaController.text.trim();
+    String password = _passwordController.text.trim(); 
+
+    // Validasi 1 : Cek apakah semua field ada isinya
+    if(fullname.isEmpty){
+      setState(() {
+        _errorTextFullname = "Field Nama Lengkap harus di isi!";
+      });
+    } else {
+      setState(() {
+        _errorTextFullname = '';
+      });
+    }
+    
+    if(username.isEmpty){
+      setState(() {
+        _errorTextUsername = "Field Username harus di isi!";
+      });
+    } else {
+      setState(() {
+        _errorTextUsername = '';
+      });
+    }
+
+    if(password.isEmpty){
+      setState(() {
+        _errorTextPassword = "Field Password harus di isi!";
+      });
+    } else{
+      if(password.length < 8 || !password.contains(RegExp(r'[A-Z]')) || !password.contains(RegExp(r'[a-z]')) || !password.contains(RegExp(r'[0-9]'))){
+        setState(() {
+          _errorTextPassword = 'Minimal 8 Karakter dengan Huruf Kapital, kecil, dan angka';
+        });
+      }
+      else {
+        setState(() {
+          _errorTextPassword = '';
+        });
+      }
+    }
+  }
+
+
+  
+  
+  // TODO : Membuat dispose
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,12 +98,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center, // Horizontal
 
                 children: [
-                  // TODO 5 : TextFormField Username
+                  // TODO 5 : TextFormField fullname
                   TextFormField(
-                    controller: _usernameController,
+                    controller: _fullnameController,
                     decoration: InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Nama Lengkap',
                       border: OutlineInputBorder(),
+                      errorText: _errorTextFullname.isNotEmpty? _errorText : null,
                     ),
                   ),
                   SizedBox(height: 16),
@@ -55,6 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Nama Pengguna',
                       border: OutlineInputBorder(),
+                      errorText: _errorTextUsername.isNotEmpty? _errorText : null,
                     ),
                   ),
                   // TODO 6 : TextFormField Password
@@ -64,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
-                      errorText: _errorText.isNotEmpty ? _errorText : null,
+                      errorText: _errorTextPassword.isNotEmpty? _errorText : null,
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -83,7 +142,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // TODO 7 : Button Sign In
                   SizedBox(height: 16),
                   ElevatedButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => HomeScreen()));
+                    _signUp();
                   }, child: Text('Sign Up')),
 
                   // TODO 8 : Text Sign Up

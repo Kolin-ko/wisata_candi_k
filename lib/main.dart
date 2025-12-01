@@ -27,7 +27,7 @@ void main() {
         useMaterial3: true,
       ),
 
-      home: MainScreen(),
+      home: SignUpScreen(),
     )
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisata_candi_k/data/candi_data.dart';
 import 'package:wisata_candi_k/models/candi.dart';
+import 'package:wisata_candi_k/screens/detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,6 +16,43 @@ class _SearchScreenState extends State<SearchScreen> {
   String searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
+// TODO : Tambahkan initState untuk menambahkan listener
+  @override
+  void initState(){
+    super.initState();
+    // Menambahkan listener pada controller untuk mendeteksi perubahan teks
+    _searchController.addListener(_filterCandis);
+  }
+
+    // TODO : Tambahkan dispose untuk membersihkan controller
+  @override
+  void dispose() {
+    // Membersihkan controller saat widget dihapus
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // TODO: Buat fungsi untuk memfilter list candi
+  // Fungsi untuk menfilter list candi berdasarkan query pencarian
+  void _filterCandis() {
+    setState(() {
+      searchQuery = _searchController.text.toLowerCase().trim();
+      // jika query kosong maka akan menampilkan semua isi candi
+      if(searchQuery.isEmpty){
+        _filteredCandis = candiList;
+      } else {
+        // Filter candi berdasarkan nama atau lokasi yang mengandung query
+        _filteredCandis = candiList.where((candi){
+          return candi.name.toLowerCase().contains(searchQuery) || 
+          candi.location.toLowerCase().contains(searchQuery) ||
+          candi.type.toLowerCase().contains(searchQuery);
+        }).toList();
+      }
+    });
+  }
+
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +71,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 color: Colors.cyan[100],
               ),
               child: TextField(
+                controller: _searchController,
+                autofocus: false,
                 decoration: InputDecoration(
-                  hintText: 'Cari Candi',
+                  hintText: 'Cari Candi / Lokasinya / Agama',
                   prefixIcon: Icon(Icons.search),
                   border: InputBorder.none,
                   focusedBorder: OutlineInputBorder(
@@ -55,33 +95,44 @@ class _SearchScreenState extends State<SearchScreen> {
               itemCount: _filteredCandis.length,
               itemBuilder: (context, index) {
                 final candi = _filteredCandis[index];
-                return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      width: 100,
-                      height: 100,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(candi.imageAsset, fit : BoxFit.cover,),
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => DetailScreen(candi: candi)));
+                  },
+                  child: Card(
+                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Hero(
+                        tag: candi.imageAsset,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          width: 100,
+                          height: 100,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(candi.imageAsset, fit : BoxFit.cover,),
+                          ),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(candi.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                          SizedBox(height : 4),
-                          Text(candi.location)
-                        ],
-                      ),
-                    )
-                  ],
-                )
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(candi.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            SizedBox(height : 4),
+                            Text(candi.location),
+                            SizedBox(height: 4),
+                            Text(candi.type)
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                  ),
                 );
               },
             ),
