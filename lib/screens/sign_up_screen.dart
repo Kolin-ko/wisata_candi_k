@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata_candi_k/screens/home_screen.dart';
 import 'package:wisata_candi_k/screens/sign_in_screen.dart';
 
@@ -20,67 +21,101 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isSignedIn = false;
   bool _obscurePassword = true;
 
-  String _errorTextFullname = '';
-  String _errorTextUsername = '';
-  String _errorTextPassword = '';
-
+  // String _errorTextFullname = '';
+  // String _errorTextUsername = '';
+  // String _errorTextPassword = '';
 
   // TODO : Membuat _signUp
-  void _signUp(){
-    String fullname = _fullnameController.text.trim();
+  void _signUp() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String fullName = _fullnameController.text.trim();
     String username = _namaPenggunaController.text.trim();
-    String password = _passwordController.text.trim(); 
+    String password = _passwordController.text.trim();
 
     // Validasi 1 : Cek apakah semua field ada isinya
-    if(fullname.isEmpty){
+    if (fullName.isEmpty || username.isEmpty || password.isEmpty) {
       setState(() {
-        _errorTextFullname = "Field Nama Lengkap harus di isi!";
+        _errorText = "Semua Field harus di isi!";
       });
-    } else {
-      setState(() {
-        _errorTextFullname = '';
-      });
-    }
-    
-    if(username.isEmpty){
-      setState(() {
-        _errorTextUsername = "Field Username harus di isi!";
-      });
-    } else {
-      setState(() {
-        _errorTextUsername = '';
-      });
+      return;
     }
 
-    if(password.isEmpty){
+    if (fullName.length < 3) {
       setState(() {
-        _errorTextPassword = "Field Password harus di isi!";
+        _errorText = "Field Nama Lengkap minimal 3 karakter!";
       });
-    } else{
-      if(password.length < 8 || !password.contains(RegExp(r'[A-Z]')) || !password.contains(RegExp(r'[a-z]')) || !password.contains(RegExp(r'[0-9]'))){
-        setState(() {
-          _errorTextPassword = 'Minimal 8 Karakter dengan Huruf Kapital, kecil, dan angka';
-        });
-      }
-      else {
-        setState(() {
-          _errorTextPassword = '';
-        });
-      }
+      return;
     }
+
+    if (username.length < 3) {
+      setState(() {
+        _errorText = "Field Username minimal 3 karakter!";
+      });
+      return;
+    }
+
+    String? existingUsername = prefs.getString('username');
+    if (existingUsername != null && existingUsername == username) {
+      setState(() {
+        _errorText = 'Username sudah terdaftar! Gunakan username lain.';
+      });
+      return;
+    }
+
+    if (password.length < 8 ||
+        !password.contains(RegExp(r'[A-Z]')) ||
+        !password.contains(RegExp(r'[a-z]')) ||
+        !password.contains(RegExp(r'[0-9]')) ||
+        !password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      setState(() {
+        _errorText =
+            'Minimal 8 Karakter dengan Huruf Kapital, kecil, dan angka, serta simbol!';
+      });
+      return;
+    } 
+      setState(() {
+        _errorText = '';
+      });
+    
+    print("*** Sign Up Berhasil ***");
+
+    prefs.setString(
+      'fullName',
+      fullName,
+    ); // Simpan fullName ke SharedPreferences
+    prefs.setString(
+      'username',
+      username,
+    ); // Simpan username ke SharedPreferences
+    prefs.setString(
+      'password',
+      password,
+    ); // Simpan password ke SharedPreferences
+    // Set isSignedIn false karena user baru register, belum login
+    prefs.setBool('isSignedIn', false);
+
+    // Tampilkan SnackBar untuk notifikasi sukses
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Sign Up berhasil! Silakan Sign In.'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+     Navigator.pushNamed(context, '/signin');
+
   }
 
-
-  
-  
   // TODO : Membuat dispose
   @override
   void dispose() {
     // TODO: implement dispose
+    _fullnameController.dispose();
+    _namaPenggunaController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,13 +133,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center, // Horizontal
 
                 children: [
-                  // TODO 5 : TextFormField fullname
+                  // TODO 5 : TextFormField fullName
                   TextFormField(
                     controller: _fullnameController,
                     decoration: InputDecoration(
                       labelText: 'Nama Lengkap',
                       border: OutlineInputBorder(),
-                      errorText: _errorTextFullname.isNotEmpty? _errorText : null,
+                      errorText: _errorText.isNotEmpty
+                          ? _errorText
+                          : null,
                     ),
                   ),
                   SizedBox(height: 16),
@@ -113,7 +150,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Nama Pengguna',
                       border: OutlineInputBorder(),
-                      errorText: _errorTextUsername.isNotEmpty? _errorText : null,
+                      errorText: _errorText.isNotEmpty
+                          ? _errorText
+                          : null,
                     ),
                   ),
                   // TODO 6 : TextFormField Password
@@ -123,7 +162,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(),
-                      errorText: _errorTextPassword.isNotEmpty? _errorText : null,
+                      errorText: _errorText.isNotEmpty
+                          ? _errorText
+                          : null,
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -141,9 +182,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   // TODO 7 : Button Sign In
                   SizedBox(height: 16),
-                  ElevatedButton(onPressed: () {
-                    _signUp();
-                  }, child: Text('Sign Up')),
+                  ElevatedButton(
+                    onPressed: () {
+                      _signUp();
+                    },
+                    child: Text('Sign Up'),
+                  ),
 
                   // TODO 8 : Text Sign Up
                   SizedBox(height: 10),

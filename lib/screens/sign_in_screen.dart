@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wisata_candi_k/screens/home_screen.dart';
 import 'package:wisata_candi_k/screens/sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -10,26 +12,69 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-// TODO 1 : Deklarasi Variabel
-  final TextEditingController _usernameController = 
-  TextEditingController();
+  // TODO 1 : Deklarasi Variabel
+  final TextEditingController _usernameController = TextEditingController();
 
-  final TextEditingController _passwordController = 
-  TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  final String _errorText = '';
+  String _errorText = '';
 
   bool _isSignedIn = false;
 
   bool _obscurePassword = true;
 
+  void _signIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String savedUsername = prefs.getString('username') ?? '';
+    final String savedPassword = prefs.getString('password') ?? '';
+    final String enteredUsername = _usernameController.text.trim();
+    final String enteredPassword = _passwordController.text.trim();
+
+    if (enteredUsername.isEmpty || enteredPassword.isEmpty) {
+      setState(() {
+        _errorText = 'Nama Pengguna dan Kata Sandi harus diisi.';
+      });
+      return;
+    }
+
+    if (savedUsername.isEmpty || savedPassword.isEmpty) {
+      setState(() {
+        _errorText = 'Akun tidak ditemukan. Silakan daftar terlebih dahulu.';
+      });
+      return;
+    }
+
+    if (enteredUsername == savedUsername && enteredPassword == savedPassword) {
+      setState(() {
+        _isSignedIn = true;
+        _errorText = '';
+      });
+      await prefs.setBool('isSignedIn', true);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(
+          context,
+        ).popUntil((route) => route.isFirst); // Kembali ke halaman utama
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<void>(builder: (context) => HomeScreen()),
+        ); // Navigasi ke halaman utama
+      });
+    } else {
+      setState(() {
+        _errorText = 'Nama Pengguna atau Kata Sandi salah.';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //TODO 2 : AppBar
-      appBar: AppBar(
-        title: Text('Sign In'),
-      ),
+      appBar: AppBar(title: Text('Sign In')),
       // TODO 3 : Body
       body: Center(
         child: SingleChildScrollView(
@@ -40,7 +85,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 // TODO 4 : Atur maiAxisAlignment dan crossAxisAlignment
                 mainAxisAlignment: MainAxisAlignment.center, // Vertikal
                 crossAxisAlignment: CrossAxisAlignment.center, // Horizontal
-                
+
                 children: [
                   // TODO 5 : TextFormField Username
                   TextFormField(
@@ -51,8 +96,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                   // TODO 6 : TextFormField Password
-                  SizedBox(height: 16,),
-                   TextFormField(
+                  SizedBox(height: 16),
+                  TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -65,51 +110,51 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         },
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
                       ),
                     ),
                     obscureText: _obscurePassword,
                   ),
                   // TODO 7 : Button Sign In
-                  SizedBox(height: 16,),
-                  ElevatedButton(onPressed: (){}, child: Text('Sign In'),),
-            
+                  SizedBox(height: 16),
+                  ElevatedButton(onPressed: () {_signIn();}, child: Text('Sign In')),
+
                   // TODO 8 : Text Sign Up
-                  SizedBox(height: 10,),
-                  RichText(text: TextSpan(
-                    text: "Lu Belum punya akun? ",
-                    style: TextStyle(fontSize: 16, color: Colors.deepPurple),
-                    children: [
-                      TextSpan(
-                        text: 'Sign Up',
-                        style: TextStyle(
-                          fontSize: 16, 
-                          color: Colors.blue,
-                           decoration: TextDecoration.underline
-                           ),
-                           recognizer: TapGestureRecognizer()
-                           ..onTap = () {
-                             Navigator.push(
+                  SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      text: "Lu Belum punya akun? ",
+                      style: TextStyle(fontSize: 16, color: Colors.deepPurple),
+                      children: [
+                        TextSpan(
+                          text: 'Sign Up',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
                                   builder: (context) => SignUpScreen(),
                                 ),
                               );
-                           },
-                      
-                      ),
-            
-                    ],
-                  ))
-            
-            
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
-            )),
+              ),
+            ),
           ),
         ),
       ),
-      
     );
   }
 }
