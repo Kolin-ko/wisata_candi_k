@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // TAMBAHKAN
+import 'package:wisata_candi_k/helpers/database_helper.dart'; // TAMBAHKAN
+import 'package:wisata_candi_k/data/candi_data.dart'; // TAMBAHKAN
 import 'package:wisata_candi_k/models/candi.dart';
 import 'package:wisata_candi_k/screens/favorite_screen.dart';
 import 'package:wisata_candi_k/screens/home_screen.dart';
@@ -8,7 +11,42 @@ import 'package:wisata_candi_k/screens/sign_in_screen.dart';
 import 'package:wisata_candi_k/screens/sign_up_screen.dart';
 import 'screens/detail_screen.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+    Future<void> _initializeDatabase() async {
+    try {
+      final dbHelper = DatabaseHelper();
+      
+      print('Checking database status...');
+      
+      // Check apakah database sudah memiliki data
+      final isEmpty = await dbHelper.isDatabaseEmpty();
+      
+      if (isEmpty) {
+        print('Database empty, migrating data...');
+        
+        // Migrasi data dari static list ke database
+        await dbHelper.insertCandiList(candiList);
+        
+        print('Data candi berhasil dimigrasikan ke database');
+      } else {
+        print('Database sudah memiliki data');
+      }
+    } catch (e) {
+      print('Database initialization error: $e');
+      rethrow;
+    }
+  }
+  
+  if (!kIsWeb) {
+    try {
+      await _initializeDatabase();
+    } catch (e) {
+      print('❌ Error initializing database: $e');
+    }
+  }
+  
   runApp(
     MaterialApp(
       title: "Wisata Candi di Indonesia",

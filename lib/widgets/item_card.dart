@@ -13,10 +13,7 @@ class ItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: 6. Implementasi routing ke DetailScreen
     return InkWell(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) => DetailScreen(candi: candi)));
-        },
+        
       child: Card(
         // TODO: 2. Tetapkan parameter shape, margin, dan elevation dari Card
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

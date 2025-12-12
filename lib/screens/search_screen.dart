@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wisata_candi_k/Helpers/database_helper.dart';
 import 'package:wisata_candi_k/data/candi_data.dart';
 import 'package:wisata_candi_k/models/candi.dart';
 import 'package:wisata_candi_k/screens/detail_screen.dart';
@@ -13,8 +15,43 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   // TODO 1. Deklarasi variabel yang diperlukan
   List<Candi> _filteredCandis = candiList;
+  List<Candi> _allCandis = [];
   String searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  final DatabaseHelper _dbHelper = DatabaseHelper(); // ✅ TAMBAHKAN
+  bool _isLoading = true; // ✅ TAMBAHKAN
+
+  Future<void> _loadCandiData() async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    if (kIsWeb) {
+      setState(() {
+        _allCandis = candiList;
+        _filteredCandis = candiList;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final candiListFromDb = await _dbHelper.getAllCandi();
+
+    setState(() {
+      _allCandis = candiListFromDb.isNotEmpty ? candiListFromDb : candiList;
+      _filteredCandis = candiListFromDb.isNotEmpty ? candiListFromDb : candiList;
+      _isLoading = false;
+    });
+  } catch (e) {
+    print('❌ Error loading data from database in search: $e');
+    setState(() {
+      _allCandis = candiList;
+      _filteredCandis = candiList;
+      _isLoading = false;
+    });
+  }
+}
 
 // TODO : Tambahkan initState untuk menambahkan listener
   @override
