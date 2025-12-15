@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata_candi_k/widgets/profile_info_item.dart';
 
@@ -15,6 +18,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String fullName = '';
   String userName = '';
   int favoriteCandiCount = 0;
+  String _imageFile = '';
+  final picker = ImagePicker();
+
+  Future<void> _getImage(ImageSource source) async{
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile.path;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -62,6 +76,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+   void _showPicker() {
+    showModalBottomSheet(
+      context: context, 
+      builder: (BuildContext context){
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text("Image Source", style: TextStyle(fontWeight: FontWeight.bold),),
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library_outlined),
+              title: Text("Gallery"),
+              onTap: () {
+                Navigator.of(context).pop(_getImage(ImageSource.gallery));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library_outlined),
+              title: Text("Camera"),
+              onTap: () {
+                Navigator.of(context).pop(_getImage(ImageSource.camera));
+              },
+            ),
+          ],
+        );
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,14 +137,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           child: CircleAvatar(
                             radius: 50,
-                            backgroundImage: AssetImage(
-                              "images/placeholder_image.png",
-                            ),
+                            backgroundImage: _imageFile.isNotEmpty 
+                            ? FileImage(File(_imageFile))  : null,
+                            child : _imageFile.isEmpty
+                            ? Icon (Icons.person, size: 50,) : null,
                           ),
                         ),
                         if (isSignedIn)
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _showPicker();
+                              },
                             icon: Icon(
                               Icons.camera_alt,
                               color: Colors.blue[50],
